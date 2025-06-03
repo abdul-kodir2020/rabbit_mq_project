@@ -4,7 +4,7 @@ const queue = 'result_queue';
 (async () => {
     const channel = await connectRabbitMQ();
 
-    await channel.assertQueue(queue, { durable: false });
+    await channel.assertQueue(queue, { durable: true });
     console.log('Consumer listening for messages on queue:', queue);
 
     channel.consume(queue, (msg) => {

@@ -40,7 +40,33 @@ build/Release
 
 # Dependency directories
 node_modules/
+frontend/node_modules/
+backend/node_modules/
+workers/node_modules/
 jspm_packages/
+
+# Build output
+dist/
+build/
+frontend/build/
+backend/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environnements
+.env
+.env.*
+
+# IDE/Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Misc
+*.local
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

@@ -29,8 +29,8 @@ const calculate = (payload, op) => {
 (async () => {
     const channel = await connectRabbitMQ();
     await channel.assertExchange(EXCHANGE, 'direct', { durable: true });
-
-    const q = await channel.assertQueue(routingKey + '_queue' , { durable: false });
+    await channel.assertExchange(EXCHANGE_FANOUT, 'fanout', { durable: true });
+    const q = await channel.assertQueue(routingKey + '_queue' , { durable: true });
     await channel.bindQueue(q.queue, EXCHANGE, routingKey);
     await channel.bindQueue(q.queue, EXCHANGE_FANOUT, '');
     console.log(`Worker listening for ${routingKey} messages on queue: ${routingKey}_queue`);
@@ -47,10 +47,10 @@ const calculate = (payload, op) => {
                 const result = calculate(payload, routingKey);
                 console.log(`Result for ${routingKey} with payload:`, payload, 'is', result);
                 // Here you can publish the result to another exchange or queue if needed
-                await channel.assertQueue('result_queue', { durable: false });
+                await channel.assertQueue('result_queue', { durable: true });
                 channel.prefetch(1); // Ensure only one message is processed at a time
                 console.log(`Publishing result for ${routingKey} to result_queue`);
-                channel.sendToQueue('result_queue', Buffer.from(JSON.stringify({ n1: payload.a, n2: payload.b, opps: routingKey, result })));
+                channel.sendToQueue('result_queue', Buffer.from(JSON.stringify({ n1: payload.n1, n2: payload.n2, op: routingKey, result })));
             }, randomInt(5000, 15000)); // wait between 5 and 15 seconds
             
         }

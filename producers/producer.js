@@ -15,7 +15,7 @@ const operations = ['add', 'sub', 'mul', 'div', 'all'];
     const n2 = randomInt(1, 100);
     const routingKey = operations[randomInt(operations.length)];
 
-    const payload = { n1, n2, operation: routingKey };
+    const payload = { n1, n2 };
     console.log(`Publishing ${routingKey}:`, payload);
 
     channel.publish(EXCHANGE, routingKey, Buffer.from(JSON.stringify(payload)));

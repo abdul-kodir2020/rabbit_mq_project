@@ -3,7 +3,7 @@ import { randomInt } from 'crypto';
 
 
 const EXCHANGE = 'calc_exchange';
-const routingKey = 'add'; // ou une routingKey dynamique
+const operations = ['add', 'sub', 'mul', 'div', 'all'];
 
 (async () => {
   const channel = await connectRabbitMQ();
@@ -11,12 +11,13 @@ const routingKey = 'add'; // ou une routingKey dynamique
   await channel.assertExchange(EXCHANGE, 'direct', { durable: true });
 
   setInterval(() => {
-    const a = randomInt(1, 100);
-    const b = randomInt(1, 100);
+    const n1 = randomInt(1, 100);
+    const n2 = randomInt(1, 100);
+    const routingKey = operations[randomInt(operations.length)];
 
-    const payload = { a, b };
+    const payload = { n1, n2, operation: routingKey };
     console.log(`Publishing ${routingKey}:`, payload);
 
     channel.publish(EXCHANGE, routingKey, Buffer.from(JSON.stringify(payload)));
-  }, 5000);
+  }, randomInt(1000, 5000));
 })(); 

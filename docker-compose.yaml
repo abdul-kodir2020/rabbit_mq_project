@@ -10,11 +10,11 @@ services:
       - "15672:15672"
     volumes:
       - rabbit-data:/var/lib/rabbitmq
-      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-      RABBITMQ_CONFIG_FILE: ${RABBITMQ_CONFIG_FILE}
+      # RABBITMQ_CONFIG_FILE: ${RABBITMQ_CONFIG_FILE}
 
 volumes:
   rabbit-data:

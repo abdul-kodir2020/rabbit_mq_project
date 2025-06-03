@@ -1,21 +1,17 @@
 import amqplib from 'amqplib'
+import env from '../export_env.js'
 
 let connection;
 let channel;
 
-function buildRabbitMQUrl() {
-    const user = process.env.RABBITMQ_DEFAULT_USER ;
-    const pass = process.env.RABBITMQ_DEFAULT_PASS;
-    
-    return `amqp://${user}:${pass}@localhost:5672`;
-}
-
 export async function connectRabbitMQ() {
     try {
         if (!connection) {
-            const url = buildRabbitMQUrl();
-            console.log('Connecting to RabbitMQ at:', url);
-            connection = await amqplib.connect(url);
+            if (!env.RABBITMQ_URL) {
+                throw new Error('RABBITMQ_URL is not defined in environment variables');
+            }
+            console.log('Connecting to RabbitMQ at:', env.RABBITMQ_URL);
+            connection = await amqplib.connect(env.RABBITMQ_URL);
             channel = await connection.createChannel();
             console.log('Connected to RabbitMQ and channel created');
 

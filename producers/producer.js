@@ -1,7 +1,4 @@
-import dotenv from 'dotenv'
 import { connectRabbitMQ } from '../common/connect.js'
-
-dotenv.config()
 
 async function testConnection() {
     try {

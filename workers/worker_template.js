@@ -3,6 +3,7 @@ import { connectRabbitMQ } from '../common/connect.js'
 import { randomInt } from 'crypto';
 
 const EXCHANGE = 'calc_exchange';
+const EXCHANGE_FANOUT = 'fanout_exchange';
 var args = process.argv.slice(2)
 
 if(args[0] === undefined || args[0] === '') {
@@ -12,20 +13,18 @@ if(args[0] === undefined || args[0] === '') {
 
 const routingKey = args[0];
 
-const calculate = (payload, opps) => {
-    if (opps === 'add') {
-        return payload.n1 + payload.n2;
-    }else if (opps === 'sub') {    
-        return payload.n1 - payload.n2; 
-    }else if (opps === 'mul') {
-        return payload.n1 * payload.n2;
-    }else if (opps === 'div') {  
-        if (payload.n2 === 0) {
-            throw new Error('Division by zero is not allowed');
-        }
-        return payload.n1 / payload.n2;
-    }
-}
+const calculate = (payload, op) => {
+  const { n1, n2 } = payload;
+  switch (op) {
+    case 'add': return n1 + n2;
+    case 'sub': return n1 - n2;
+    case 'mul': return n1 * n2;
+    case 'div':
+      if (n2 === 0) throw new Error('Division by zero is not allowed');
+      return n1 / n2;
+    default: throw new Error(`Unsupported operation: ${op}`);
+  }
+};
 
 (async () => {
     const channel = await connectRabbitMQ();
@@ -33,6 +32,7 @@ const calculate = (payload, opps) => {
 
     const q = await channel.assertQueue(routingKey + '_queue' , { durable: false });
     await channel.bindQueue(q.queue, EXCHANGE, routingKey);
+    await channel.bindQueue(q.queue, EXCHANGE_FANOUT, '');
     console.log(`Worker listening for ${routingKey} messages on queue: ${routingKey}_queue`);
 
     channel.consume(q.queue, (msg) => {
@@ -57,4 +57,3 @@ const calculate = (payload, opps) => {
     });
 
 })();
-

@@ -4,7 +4,13 @@ import { randomInt } from 'crypto';
 
 const EXCHANGE = 'calc_exchange';
 var args = process.argv.slice(2)
-const routingKey = args[0] || 'add';
+
+if(args[0] === undefined || args[0] === '') {
+    console.error('Please provide a routing key as an argument (e.g., add, sub, mul, div)');
+    process.exit(1);
+}
+
+const routingKey = args[0];
 
 const calculate = (payload, opps) => {
     if (opps === 'add') {

@@ -1,30 +1,22 @@
 import { connectRabbitMQ } from '../common/connect.js'
+import { randomInt } from 'crypto';
 
-async function testConnection() {
-    try {
-        const channel = await connectRabbitMQ();
-        console.log('Successfully connected to RabbitMQ!');
-        
-        // Créer une queue de test
-        const queueName = 'test_queue';
-        await channel.assertQueue(queueName, { durable: false });
-        
-        // Envoyer un message de test
-        const message = { test: 'Hello RabbitMQ!' };
-        channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
-        console.log('Test message sent:', message);
-        
-        // Fermer la connexion après 2 secondes
-        setTimeout(() => {
-            channel.connection.close();
-            console.log('Connection closed');
-            process.exit(0);
-        }, 2000);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        process.exit(1);
-    }
-}
 
-testConnection();
+const EXCHANGE = 'calc_exchange';
+const routingKey = 'add'; // ou une routingKey dynamique
+
+(async () => {
+  const channel = await connectRabbitMQ();
+
+  await channel.assertExchange(EXCHANGE, 'direct', { durable: true });
+
+  setInterval(() => {
+    const a = randomInt(1, 100);
+    const b = randomInt(1, 100);
+
+    const payload = { a, b };
+    console.log(`Publishing ${routingKey}:`, payload);
+
+    channel.publish(EXCHANGE, routingKey, Buffer.from(JSON.stringify(payload)));
+  }, 5000);
+})(); 

@@ -10,11 +10,81 @@ services:
       - "15672:15672"
     volumes:
       - rabbit-data:/var/lib/rabbitmq
-      # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-      # RABBITMQ_CONFIG_FILE: ${RABBITMQ_CONFIG_FILE}
+    env_file:
+      - ./rabbitmq/.env
+
+  producer:
+    build: ./rabbitmq
+    command: node /app/producers/producer.js
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+
+  backend:
+    build: ./rabbitmq
+    command: node ./backend/server.js
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+
+  consumer:
+    build: ./rabbitmq
+    command: node /app/consumers/consumer.js
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+
+  add_worker:
+    build: ./rabbitmq
+    command: node workers/worker_template.js add
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+      - producer
+
+  sub_worker:
+    build: ./rabbitmq
+    command: node workers/worker_template.js sub
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+      - producer
+
+  mul_worker:
+    build: ./rabbitmq
+    command: node workers/worker_template.js mul
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+      - producer
+
+  div_worker:
+    build: ./rabbitmq
+    command: node workers/worker_template.js div
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+      - producer
 
 volumes:
   rabbit-data:

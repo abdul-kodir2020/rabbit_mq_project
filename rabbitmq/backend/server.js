@@ -1,5 +1,6 @@
 // Backend Express + WebSocket pour relier le frontend React à RabbitMQ
 import express from 'express';
+import { consumeResultQueue } from '../consumers/consumer.js';
 import http from 'http';
 import { Server as SocketIO } from 'socket.io';
 import cors from 'cors';
@@ -7,7 +8,6 @@ import bodyParser from 'body-parser';
 import { connectRabbitMQ } from '../common/connect.js';
 
 const PORT = process.env.PORT || 4000;
-const RESULT_QUEUE = 'result_queue';
 const EXCHANGE = 'calc_exchange'; 
 const EXCHANGE_FANOUT = 'fanout_exchange'; // Pour l'opération "all"
 
@@ -46,24 +46,11 @@ io.on('connection', (socket) => {
   console.log('Frontend connecté au WebSocket');
 });
 
-// Ecoute la queue des résultats et envoie à tous les clients connectés
-async function listenResults() {
-  const channel = await connectRabbitMQ();
-  await channel.assertQueue(RESULT_QUEUE, { durable: true });
-  channel.consume(RESULT_QUEUE, (msg) => {
-    if (msg !== null) {
-      try {
-        const result = JSON.parse(msg.content.toString());
-        io.emit('result', result);
-      } catch (e) {
-        console.error('Erreur parsing résultat:', e.message);
-      }
-      channel.ack(msg);
-    }
-  });
-}
-
-listenResults();
+// Démarre l'écoute avec la logique WebSocket comme callback
+consumeResultQueue((result) => {
+  console.log('Emitting result to frontend via WebSocket:', result);
+  io.emit('result', result);
+});
 
 server.listen(PORT, () => {
   console.log('Backend API/WS démarré sur le port', PORT);

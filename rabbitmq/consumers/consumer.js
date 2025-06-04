@@ -1,18 +1,22 @@
-import { connectRabbitMQ } from '../common/connect.js'
+import { connectRabbitMQ } from '../common/connect.js';
 
-const queue = 'result_queue';
-(async () => {
-    const channel = await connectRabbitMQ();
+export async function consumeResultQueue(callback) {
+  const queue = 'result_queue';
+  const channel = await connectRabbitMQ();
 
-    await channel.assertQueue(queue, { durable: true });
-    console.log('Consumer listening for messages on queue:', queue);
+  await channel.assertQueue(queue, { durable: true });
+  console.log('Consumer listening for messages on queue:', queue);
 
-    channel.consume(queue, (msg) => {
-        if (msg !== null) {
-            const payload = JSON.parse(msg.content.toString());
-            console.log('Received result:', payload);
-            channel.ack(msg); // Acknowledge the message
-            console.log('Processing result for payload:', payload);
-        }
-    });
-})();
+  channel.consume(queue, (msg) => {
+    if (msg !== null) {
+      try {
+        const payload = JSON.parse(msg.content.toString());
+        callback(payload); 
+        channel.ack(msg); 
+      } catch (e) {
+        console.error('Error processing message:', e.message);
+        channel.nack(msg, false, false); 
+      }
+    }
+  });
+}

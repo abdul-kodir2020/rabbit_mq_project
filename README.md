@@ -55,8 +55,12 @@ RABBITMQ_URL=amqp://user:password@rabbitmq
 ```bash
 docker-compose up
 ```
-
 📝 Assurez-vous que Docker et Docker Compose sont bien installés.
+
+4. Ouvrir le frontend dans un navigateur pour tester :
+```bash
+http://localhost:8080
+```
 
 # ⚙️ Fonctionnement
 

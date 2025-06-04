@@ -97,8 +97,9 @@ useEffect(() => {
 }, []);
 
   // Envoi vers le backend
-const BACKEND_URL = "http://localhost:4000";
-const WS_URL = "ws://localhost:4000";
+const BACKEND_URL = "http://backend";
+const WS_URL = "http://backend"; // URL du WebSocket
+
 
 const sendOperation = async (payload) => {
   setSentOps((ops) => [
@@ -274,23 +275,6 @@ const sendOperation = async (payload) => {
       </Grid>
     </Container>
   );
-}
-
-function calc(n1, n2, op) {
-  switch (op) {
-    case "add":
-      return n1 + n2;
-    case "sub":
-      return n1 - n2;
-    case "mul":
-      return n1 * n2;
-    case "div":
-      return n2 !== 0 ? (n1 / n2).toFixed(2) : "Erreur";
-    case "all":
-      return `add:${n1 + n2}, sub:${n1 - n2}, mul:${n1 * n2}, div:${n2 !== 0 ? (n1 / n2).toFixed(2) : "Erreur"}`;
-    default:
-      return "?";
-  }
 }
 
 export default App;

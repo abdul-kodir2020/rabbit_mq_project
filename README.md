@@ -8,6 +8,7 @@
 
 ---
 
+
 ## 📘 Description
 
 Ce projet a été réalisé dans le cadre d'un cours sur les systèmes de messagerie et vise à simuler un **système de calcul distribué** en utilisant **RabbitMQ** comme **broker de messages**.
@@ -36,7 +37,21 @@ git clone https://github.com/abdul-kodir2020/rabbit_mq_project.git
 cd rabbit_mq_project
 ```
 
-2. Lancer le projet avec Docker
+### 2. ⚠️ Placer ce fichier .env dans /rabbitmq avant de lancer le projet ⚠️
+(Voir plus bas l'arborescence  du projet)
+```bash
+RABBITMQ_DEFAULT_USER=user
+RABBITMQ_DEFAULT_PASS=password
+
+# Si besoin de tester en Local
+# RABBITMQ_URL=amqp://user:password@localhost:5672
+
+# Docker 
+RABBITMQ_URL=amqp://user:password@rabbitmq 
+```
+---
+
+3. Lancer le projet avec Docker
 ```bash
 docker-compose up
 ```
@@ -135,8 +150,8 @@ Chaque résultat reçu est affiché sous la forme :
 ├── common/                # Connexion RabbitMQ partagée
 ├── consumers/             # Clients qui récupèrent les résultats
 ├── producers/             # Générateurs de requêtes
-├── workers/               # Workers spécialisés
-├── rabbitmq/              # Config et Docker pour RabbitMQ
+├── workers/               # Workers spécialisés 
+├── rabbitmq/              # Config et Docker pour RabbitMQ (.ENV ICI !)
 ├── docker-compose.yml     # Orchestration complète
 └── README.md              # Ce fichier 🙂
 ```

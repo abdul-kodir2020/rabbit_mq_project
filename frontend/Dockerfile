@@ -7,6 +7,12 @@ WORKDIR /app
 # Copier les fichiers de dépendances
 COPY package.json package-lock.json ./
 
+
+ARG REACT_APP_BACKEND_URL
+ARG REACT_APP_WS_URL
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+ENV REACT_APP_WS_URL=$REACT_APP_WS_URL
+
 # Installer les dépendances
 RUN npm install
 

@@ -97,8 +97,10 @@ useEffect(() => {
 }, []);
 
   // Envoi vers le backend
-const BACKEND_URL = "http://backend";
-const WS_URL = "http://backend"; // URL du WebSocket
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+const WS_URL = process.env.REACT_APP_WS_URL // URL du WebSocket
+
+console.log("Backend URL:", BACKEND_URL);
 
 
 const sendOperation = async (payload) => {
